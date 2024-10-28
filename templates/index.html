@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+
+{% block title %} {{user[1]}}'s Profile {% endblock %}
+
+{% block content %}
+
+<h1>Your Tasks</h1>
+<form method="POST" action="/tasks">
+    <input type="text" name="description" placeholder="New task description" required>
+    
+    <label for="reminder_time">Reminder Time:</label>
+    <input type="datetime-local" name="reminder_time">
+    
+    <label for="priority">Priority:</label>
+    <select name="priority">
+        <option value="1">Urgent</option>
+        <option value="2">Important</option>
+        <option value="3" selected>Normal</option>
+        <option value="4">Low</option>
+    </select>
+    
+    <label for="deadline">Deadline:</label>
+    <input type="datetime-local" name="deadline">
+    
+    <label for="recurrence">Recurrence:</label>
+    <select name="recurrence">
+        <option value="">None</option>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+    </select>
+    
+    <button type="submit">Add Task</button>
+</form>
+
+<ul>
+    {% for task in tasks %}
+    <li>
+        {{ task.description }}
+        - Priority: {{ task.priority.name }}
+        - Due: {{ task.deadline.strftime("%Y-%m-%d %H:%M") if task.deadline else "No deadline" }}
+        {% if task.is_completed %}
+            - Completed
+        {% else %}
+            <form method="POST" action="/tasks/{{ task.id }}/complete" style="display:inline;">
+                <button type="submit">Mark as Complete</button>
+            </form>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+
+
+{% endblock}
