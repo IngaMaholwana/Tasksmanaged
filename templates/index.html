@@ -1,54 +1,37 @@
-{% extends 'layout.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <h2>Add a New Task</h2>
+    <form action="/add_task" method="post">
+        <input type="text" name="title" placeholder="Title" required>
+        <input type="text" name="description" placeholder="Description">
+        <input type="number" name="importance" min="1" max="4" placeholder="Importance (1-4)">
+        <button type="submit">Add Task</button>
+    </form>
 
-{% block title %} {{user[1]}}'s Profile {% endblock %}
-
-{% block content %}
-
-<h1>Your Tasks</h1>
-<form method="POST" action="/tasks">
-    <input type="text" name="description" placeholder="New task description" required>
-    
-    <label for="reminder_time">Reminder Time:</label>
-    <input type="datetime-local" name="reminder_time">
-    
-    <label for="priority">Priority:</label>
-    <select name="priority">
-        <option value="1">Urgent</option>
-        <option value="2">Important</option>
-        <option value="3" selected>Normal</option>
-        <option value="4">Low</option>
-    </select>
-    
-    <label for="deadline">Deadline:</label>
-    <input type="datetime-local" name="deadline">
-    
-    <label for="recurrence">Recurrence:</label>
-    <select name="recurrence">
-        <option value="">None</option>
-        <option value="daily">Daily</option>
-        <option value="weekly">Weekly</option>
-        <option value="monthly">Monthly</option>
-    </select>
-    
-    <button type="submit">Add Task</button>
-</form>
-
-<ul>
-    {% for task in tasks %}
-    <li>
-        {{ task.description }}
-        - Priority: {{ task.priority.name }}
-        - Due: {{ task.deadline.strftime("%Y-%m-%d %H:%M") if task.deadline else "No deadline" }}
-        {% if task.is_completed %}
-            - Completed
-        {% else %}
-            <form method="POST" action="/tasks/{{ task.id }}/complete" style="display:inline;">
-                <button type="submit">Mark as Complete</button>
+    <h2>Tasks</h2>
+    <ul>
+        {% for task in tasks %}
+        <li>
+            <strong>{{ task.title }}</strong> - Importance: {{ task.importance }}<br>
+            {{ task.description }}
+            <form action="/update_task/{{ task.id }}" method="post">
+                <input type="text" name="title" value="{{ task.title }}">
+                <input type="text" name="description" value="{{ task.description }}">
+                <input type="number" name="importance" min="1" max="4" value="{{ task.importance }}">
+                <button type="submit">Update</button>
             </form>
-        {% endif %}
-    </li>
-    {% endfor %}
-</ul>
-
-
-{% endblock}
+            <form action="/delete_task/{{ task.id }}" method="post" style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
