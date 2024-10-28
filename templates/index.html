@@ -6,28 +6,37 @@
     <title>To-Do List</title>
 </head>
 <body>
+    <div class="user-info">
+        <p>Welcome, {{ current_user.username }}! <a href="{{ url_for('logout') }}">Logout</a></p>
+    </div>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     <h1>To-Do List</h1>
     <h2>Add a New Task</h2>
-    <form action="/add_task" method="post">
+    <form action="{{ url_for('add_task') }}" method="post">
         <input type="text" name="title" placeholder="Title" required>
         <input type="text" name="description" placeholder="Description">
         <input type="number" name="importance" min="1" max="4" placeholder="Importance (1-4)">
         <button type="submit">Add Task</button>
     </form>
-
     <h2>Tasks</h2>
     <ul>
         {% for task in tasks %}
         <li>
             <strong>{{ task.title }}</strong> - Importance: {{ task.importance }}<br>
             {{ task.description }}
-            <form action="/update_task/{{ task.id }}" method="post">
+            <form action="{{ url_for('update_task', id=task.id) }}" method="post">
                 <input type="text" name="title" value="{{ task.title }}">
                 <input type="text" name="description" value="{{ task.description }}">
                 <input type="number" name="importance" min="1" max="4" value="{{ task.importance }}">
                 <button type="submit">Update</button>
             </form>
-            <form action="/delete_task/{{ task.id }}" method="post" style="display:inline;">
+            <form action="{{ url_for('delete_task', id=task.id) }}" method="post" style="display:inline;">
                 <button type="submit">Delete</button>
             </form>
         </li>
